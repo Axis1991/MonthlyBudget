@@ -102,6 +102,4 @@ def sum_up_expenses(data):
 
 
 if __name__ == "__main__":
-    # add_shopping_items(entry)
     pass
-
