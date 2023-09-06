@@ -19,7 +19,7 @@ Provide instructions on how to use your project.
 
 ## Contributing
 
-Please report the bugs I haven't caught @ mymail@gmail.com
+Please report the bugs I haven't caught @ gromaniuk0@gmail.com
 
 ## License
 
