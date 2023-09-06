@@ -2,7 +2,6 @@ from flask import Flask, redirect, render_template, request, session, flash
 from functs import (
     db_create,
     add_shopping_items,
-    #display_calendar_page,
     read_shopping_data,
     sum_up_expenses,
     add_user,

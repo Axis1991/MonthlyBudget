@@ -1,4 +1,3 @@
-# import calendar, datetime
 import sqlite3
 from flask import redirect, flash, render_template
 from models import Shopping, Users
@@ -86,15 +85,6 @@ def sum_up_expenses(data):
         day, value, item, satisfaction = each
         total += float(value)
     return total
-
-
-# def display_calendar_page() -> None:
-#     current_year = datetime.date.today().year
-#     current_month = datetime.date.today().month
-#     cal = calendar.month(current_year, current_month)
-#     print(type(cal))
-#     return cal
-
 
 if __name__ == "__main__":
     pass
