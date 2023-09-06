@@ -19,11 +19,6 @@ def db_create() -> None:
         "CREATE TABLE IF NOT EXISTS users (userid INTEGER PRIMARY KEY AUTOINCREMENT, username NOT NULL, password NOT NULL)"
     )
 
-
-def unpack_for_db():
-    pass
-
-
 def add_shopping_items(entry: object) -> None:
     # [Shopping]
     userid = str(entry.userid)
