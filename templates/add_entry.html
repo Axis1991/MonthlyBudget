@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h1>{{ the_title }}</h1>
+
+<h2>Current Month Calendar</h2>
+<div>
+    {{ calendar_data|safe }}
+</div>
+
+
+<h2> Add your purchase:</h2>
+<!-- <p class="info">Choose a day you'd like to edit</p> -->
+
+
+<div class="form">
+    <form method='POST' , action='/add_entry'>
+        <p class="infos">Use this form to save your expenses:</p>
+        <table>
+            <tr>
+                <td>Day of purchase:</td>
+                <td><input name='day' type='TEXT' width='60' required pattern="^\b([1-9]|[12][0-9]|3[01])\b"
+                        placeholder="Type from 1-31"></td>
+            </tr>
+            <tr>
+                <td>Name of the item:</td>
+                <td><input name='item' type='TEXT' width='60' required></td>
+            </tr>
+            <tr>
+                <td>Cost:</td>
+                <td><input name='value' type='number' step="0.01" min=0 width='60' required></td>
+            </tr>
+            <tr>
+                <td>Am I happy with my purchase?:</td>
+                <td><input name='happy' type='checkbox' width='60'></td>
+            </tr>
+        </table>
+        <p class="infos">When you're ready, click this button:</p>
+        <p><input value='Add expense' class="button-link" type='SUBMIT'></p>
+    </form>
+</div>
+
+{% endblock %}

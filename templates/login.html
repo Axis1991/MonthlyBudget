@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h1>{{ the_title }}</h1>
+<form method='POST' , action='/login'>
+    <div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p class="warning">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <table>
+        <h2><b>Please log in:</b></h2>
+        <tr>
+            <td><b>Username:</b></td>
+            <td><input name='username' type='text' width='60' required pattern="^[a-zA-Z0-9]{3,}"></td>
+            <td rowspan="2">
+                <input value="Log in" class="button-link" type='SUBMIT'>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Password:</b></td>
+            <td><input name='password' type='password' width='60' required pattern="{3,}"></td>
+        </tr>
+    </table>
+
+
+</form>
+<table>
+
+    <tr>
+        <td><b>New to the site?</b></td>
+        <td colspan="2"><a href="{{ url_for('register') }}" class="button-link">Register</a></td>
+    </tr>
+    </form>
+</table>
+
+
+
+{% endblock %}

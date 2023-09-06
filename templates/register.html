@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h1>{{ the_title }}</h1>
+<form method='POST' , action='/register'>
+    <table>
+        <p><b>Please register:</b></p>
+        <tr>
+            <td><b>Choose a username:</b></td>
+            <td><input name='username' type='text' width='60' required pattern="^[a-zA-Z0-9]{3,}"></td>
+        </tr>
+        <tr>
+            <td><b>Choose your password:</b></td>
+            <td><input name='password' type='password' width='60' required pattern="{3,}"></td>
+        </tr>
+    </table>
+    <p><input value="Register" class="button-link" type='SUBMIT'></p>
+</form>
+
+
+{% endblock %}

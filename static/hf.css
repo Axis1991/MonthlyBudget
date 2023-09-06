@@ -1,0 +1,120 @@
+body {
+	text-align: center;
+	font-family: Verdana, Geneva, Arial, sans-serif;
+	font-size: medium;
+	background-color: rgb(110, 239, 131);
+	margin-top: 5%;
+	margin-bottom: 5%;
+	margin-left: 10%;
+	margin-right: 10%;
+	border: 5px solid gray;
+	padding: 10px 10px 10px 10px;
+	box-shadow: 2px -2px 6px 2px #4a4920;
+}
+
+.button-link {
+	display: inline-block;
+	padding: 10px 20px;
+	background-color: #007bff; /* Button background color */
+	color: #fff; /* Button text color */
+	text-decoration: none;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+/* Style for when the mouse hovers over the button */
+.button-link:hover {
+	background-color: #0056b3; /* Button background color on hover */
+}
+
+.infos {
+	text-align: center;
+	font-size: 20px;
+}
+
+a {
+	display: inline-block;
+	text-decoration: none;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+a:hover {
+	text-decoration: underline;
+}
+a img {
+	border: 0;
+}
+h2 {
+	font-size: 150%;
+	text-align: center;
+}
+
+.warning {
+	font-size: 175%;
+	font-weight: 600;
+	text-align: center;
+	color: crimson;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+td,
+th {
+	padding: 5px;
+	text-align: left;
+	height: 40px;
+	width: 130px;
+	text-align: center;
+}
+.copyright {
+	font-size: 75%;
+	font-style: italic;
+}
+.slogan {
+	font-size: 75%;
+	font-style: italic;
+}
+.confirmentry {
+	font-weight: 600;
+}
+.form {
+	text-align: center;
+}
+
+/*** Tables ***/
+
+table {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 25px;
+	font-size: 1.2em;
+	background-color: #b9ceed;
+	border: 4px solid #909090;
+	color: #2a2a2a;
+	padding: 5px 5px 2px;
+	border-collapse: collapse;
+	box-shadow: 2px -2px 6px 2px #4a4920;
+}
+
+td,
+th {
+	border: thin dotted gray;
+}
+
+/*** Inputs ***/
+input[type='text'] {
+	font-size: 115%;
+	width: 15em;
+}
+input[type='number'] {
+	font-size: 115%;
+	width: 15em;
+}
+input[type='submit'] {
+	font-size: 125%;
+}
+select {
+	font-size: 125%;
+}
