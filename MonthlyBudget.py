@@ -12,6 +12,7 @@ from functs import (
 from models import Shopping, Users
 import sqlite3
 
+
 app = Flask(__name__)
 app.secret_key = "E-)O.[1i]-U3W'c"
 
