@@ -17,6 +17,7 @@ app.secret_key = "E-)O.[1i]-U3W'c"
 
 TITLE = "Monthly expenses"
 
+another_test = "test"
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])
