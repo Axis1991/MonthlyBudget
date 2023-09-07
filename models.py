@@ -20,3 +20,5 @@ class Shopping(object):
     #         raise ValueError("You need to specify the name")
     #     if len(self.username) < 3:
     #         raise ValueError("Username needs at least 3 characters")
+    #     if not self.password:
+    #         raise ValueError("Password cannot be empty")
