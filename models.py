@@ -13,6 +13,7 @@ class Shopping(object):
     value: float
     happy: str
 
+e = "sdsfsfddsfdsf"
         # def __post_init__(self):
     #     if float(self.value) < 0:
     #         raise ValueError("Value cannot be negative")
@@ -24,4 +25,4 @@ class Shopping(object):
     #         raise ValueError("Password cannot be empty")
 
 
-    "This is so amazing"
+e1 =  "This is so amazing"
