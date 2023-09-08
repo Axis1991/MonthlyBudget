@@ -23,6 +23,3 @@ e = "sdsfsfddsfdsf"
     #         raise ValueError("Username needs at least 3 characters")
     #     if not self.password:
     #         raise ValueError("Password cannot be empty")
-
-
-e1 =  "This is so amazing"
