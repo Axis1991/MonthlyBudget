@@ -13,6 +13,7 @@ class Shopping(object):
     value: float
     happy: str
 
+e = "sdsfsfddsfdsf"
         # def __post_init__(self):
     #     if float(self.value) < 0:
     #         raise ValueError("Value cannot be negative")
@@ -22,5 +23,3 @@ class Shopping(object):
     #         raise ValueError("Username needs at least 3 characters")
     #     if not self.password:
     #         raise ValueError("Password cannot be empty")
-
-"wow so nice so sweet"
