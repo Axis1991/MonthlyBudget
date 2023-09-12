@@ -137,6 +137,7 @@ if __name__ == "__main__":
 
 # Następnym razem:
 
+#dfdffddf
 # api - o co w ogóle chodzi?
 # testy - jak sprawdzić z plikami/bazami danych?
 # licencja git
