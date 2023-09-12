@@ -23,8 +23,6 @@ def index():
     db_create()
     if "username" in session:
         username = session["username"]
-
-        # username_ready = display_username(username)
         return render_template("info.html", username=username)
     else:
         return render_template("login.html", the_title=TITLE)
@@ -95,33 +93,28 @@ def add_entry() -> str:
         entry = Shopping(userid, day_num, item, value, happy)
         add_shopping_items(entry)
         return redirect("/results")
-    # cal = display_calendar_page()
-
     return render_template(
         "add_entry.html", the_title=TITLE, 
-        #calendar_data = cal
     )
 
 
 @app.route("/results", methods=["GET", "POST"])
 def results() -> str:
     current_userid = session["id"]
-    # zastąpić user id
     shopping_list = read_shopping_data(current_userid)
     sum_of_expenses = sum_up_expenses(shopping_list)
-    # cal = display_calendar_page()
 
     return render_template(
         "results.html",
         the_title=TITLE,
         shopping_list=shopping_list,
         sum_of_expenses=sum_of_expenses,
-        #calendar_data = cal
     )
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
 # https://flask.palletsprojects.com/en/2.3.x/quickstart/#sessions
@@ -143,4 +136,9 @@ if __name__ == "__main__":
 
 
 # Następnym razem:
-# ~~~~~~^^^^^^^^^^TypeError: type 'object' is not subscriptable
+
+# git ssh - klucze
+# api - o co w ogóle chodzi?
+# testy - jak sprawdzić z plikami/bazami danych?
+# licencja git
+# co dalej z projektem?

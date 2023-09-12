@@ -18,7 +18,7 @@ def db_create() -> None:
         "CREATE TABLE IF NOT EXISTS users (userid INTEGER PRIMARY KEY AUTOINCREMENT, username NOT NULL, password NOT NULL)"
     )
 
-def add_shopping_items(entry: object) -> None:
+def add_shopping_items(entry: Shopping) -> None:
     # [Shopping]
     userid = str(entry.userid)
     date = entry.day_num
@@ -37,7 +37,7 @@ def add_shopping_items(entry: object) -> None:
     con.close()
 
 
-def add_user(new_user: [Users]):
+def add_user(new_user: Users):
     username = new_user.username
     password = new_user.password
     con = sqlite3.connect("shopping.db")
