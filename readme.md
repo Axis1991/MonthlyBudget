@@ -11,16 +11,12 @@ The app registers users and tells them how much they spent on their shopping ite
 
 ## Installation
 
-Project is web based and does not need an installation.
+Project is web based and does not need an installation. It is deployed on https://axis91.pythonanywhere.com/
 
 ## Usage
 
-Provide instructions on how to use your project.
-
-## Contributing
-
-Please report the bugs I haven't caught @ gr********@gmail.com
+Log in and type your expenses. The program counts the sum and lets you mark the satisfaction of a well made purchase. It is my first project and is under development.
 
 ## License
 
-This project is licensed under the XYZ License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache 2.0 License.
