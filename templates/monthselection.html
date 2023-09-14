@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<h2>{{ the_title }}</h2>
+
+<table>
+    <tr>
+        <td>Choose the month of your purchase</td>
+    </tr>
+    <tr>
+        <form method='POST', action='/month_selection'>
+        <td><select name='month' type='TEXT' width='60' required>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+
+            </select></td>
+    </tr>
+    <td>
+        <input value="Add more details" type='SUBMIT' class="button-link">
+        </form>
+    </td>
+    </tr>
+</table>
+
+{% endblock %}

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 @dataclass
 class Users(object):
@@ -8,12 +9,11 @@ class Users(object):
 @dataclass
 class Shopping(object):
     userid: int
-    day_num: int
+    day_num: datetime
     item: str
     value: float
     happy: str
 
-e = "sdsfsfddsfdsf"
         # def __post_init__(self):
     #     if float(self.value) < 0:
     #         raise ValueError("Value cannot be negative")

@@ -1,6 +1,9 @@
+import calendar
+from datetime import datetime
 import sqlite3
 from flask import redirect, flash, render_template
 from models import Shopping, Users
+
 
 HAPPY_FACE = r'<img src="https://cdn-icons-png.flaticon.com/512/214/214251.png" width=30px height=30px alt="Yes!">'
 SAD_FACE = r'<img src="https://cdn-icons-png.flaticon.com/512/982/982991.png" width=30px height=30px alt="Nope =()">'
@@ -25,17 +28,21 @@ def add_shopping_items(entry: Shopping) -> None:
     cost = entry.value
     item = entry.item
     satisfaction = entry.happy
-    print(userid, date, cost, item, satisfaction)
     con = sqlite3.connect("shopping.db")
     cur = con.cursor()
     cur.execute(
-        "INSERT INTO purchases (userid, date, cost, item,satisfaction) values (?, ?, ?, ?, ?)",
+        "INSERT INTO purchases (userid, date, cost, item, satisfaction) values (?, ?, ?, ?, ?)",
         (userid, date, cost, item, satisfaction),
     )
     con.commit()
     cur.close()
     con.close()
 
+def get_month_info(year, month):
+    weekday, no_of_days = calendar.monthrange(year, month)
+    
+
+    print(weekday, no_of_days)
 
 def add_user(new_user: Users):
     username = new_user.username
@@ -87,4 +94,4 @@ def sum_up_expenses(data):
     return total
 
 if __name__ == "__main__":
-    pass
+    get_month_info(2023, 9)
