@@ -15,7 +15,9 @@ Project is web based and does not need an installation. It is deployed on https:
 
 ## Usage
 
-Log in and type your expenses. The program counts the sum and lets you mark the satisfaction of a well made purchase. It is my first project and is under development.
+Log in and type your expenses. The program counts the sum and lets you mark the satisfaction of a well made purchase. 
+
+This is my first project and is under development.
 
 ## License
 
