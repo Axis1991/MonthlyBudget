@@ -9,6 +9,25 @@
 
 <h3> {{ the_month }} 2023</h3>
 
+<table>
+    <tr>
+        <th>Mon</th>
+        <th>Tue</th>
+        <th>Wed</th>
+        <th>Thu</th>
+        <th>Fri</th>
+        <th>Sat</th>
+        <th>Sun</th>
+    </tr>
+    {% for row in the_month_data %}
+    <tr>
+        {% for cell in row %}
+        <td>{{ cell }}</td>
+        {% endfor %}
+    </tr>
+    {%endfor%}
+</table>
+
 <div class="form">
     <form method='POST' , action='/add_entry'>
         <p class="infos">Use this form to save your expenses:</p>

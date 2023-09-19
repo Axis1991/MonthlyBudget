@@ -9,7 +9,7 @@ class Users(object):
 @dataclass
 class Shopping(object):
     userid: int
-    day_num: datetime
+    date: datetime
     item: str
     value: float
     happy: str

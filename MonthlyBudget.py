@@ -7,6 +7,9 @@ from functs import (
     sum_up_expenses,
     add_user,
     get_user_id,
+    get_month_info,
+    get_month_number,
+    parse_date,
     HAPPY_FACE,
     SAD_FACE,
 )
@@ -94,25 +97,28 @@ def month_selection() -> str:
 @app.route("/add_entry", methods=["GET", "POST"])
 def add_entry() -> str:
         month = session["month"]
-        
+        month_no = get_month_number(month)
+        month_data = get_month_info(YEAR, month_no)
         if request.method == "POST":
             userid = session["id"]
             item = request.form["item"]
-            day_num = request.form["day"]
+            day = request.form["day"]
             value = request.form["value"]
             try:
                 if request.form["happy"]:
                     happy = HAPPY_FACE
             except KeyError:
                 happy = SAD_FACE
-            entry = Shopping(userid, day_num, item, value, happy)
+            raw_date = datetime(YEAR, month_no, int(day))
+            date = parse_date(raw_date)
+            entry = Shopping(userid, date, item, value, happy)
             add_shopping_items(entry)
             return redirect("/results")
         return render_template(
             "add_entry.html",
             the_title=TITLE,
-            the_month=month
-
+            the_month=month,
+            the_month_data=month_data
         )
 
 
