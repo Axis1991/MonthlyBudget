@@ -6,10 +6,11 @@ from functs import (
     read_shopping_data,
     sum_up_expenses,
     add_user,
-    get_user_id,
+    get_user,
     get_month_info,
     get_month_number,
     parse_date,
+    repack_for_render,
     HAPPY_FACE,
     SAD_FACE,
 )
@@ -40,8 +41,8 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         new_user = Users(username, password)
-        add_user(new_user)  # dodać id
-        return redirect("/index")
+        add_user(new_user)
+        return redirect("/login")
 
     return render_template("register.html", the_title=TITLE)
 
@@ -51,10 +52,10 @@ def login():
     if request.method == "POST":
         session["username"] = request.form["username"]
         session["password"] = request.form["password"]
-        print(session["username"], session["password"])
         try:
-            session["id"] = get_user_id(session["username"], session["password"])
-            print(session["id"])
+            current_user = get_user(session["username"], session["password"])
+            session["id"] = current_user.id
+            # print("main - session id", current_user.id)
             return redirect("/index")
         except sqlite3.OperationalError:
             flash("Username or password are incorrect, or there is no such account.")
@@ -96,42 +97,47 @@ def month_selection() -> str:
 
 @app.route("/add_entry", methods=["GET", "POST"])
 def add_entry() -> str:
-        month = session["month"]
-        month_no = get_month_number(month)
-        month_data = get_month_info(YEAR, month_no)
-        if request.method == "POST":
-            userid = session["id"]
-            item = request.form["item"]
-            day = request.form["day"]
-            value = request.form["value"]
-            try:
-                if request.form["happy"]:
-                    happy = HAPPY_FACE
-            except KeyError:
-                happy = SAD_FACE
-            raw_date = datetime(YEAR, month_no, int(day))
-            date = parse_date(raw_date)
-            entry = Shopping(userid, date, item, value, happy)
-            add_shopping_items(entry)
-            return redirect("/results")
-        return render_template(
-            "add_entry.html",
-            the_title=TITLE,
-            the_month=month,
-            the_month_data=month_data
-        )
+    month = session["month"]
+    month_no = get_month_number(month)
+    month_data = get_month_info(YEAR, month_no)
+    # dodaj info czy jest zakup
+    if request.method == "POST":
+        print("main add entry session id", session["id"])
+        userid = session["id"]
+        item = request.form["item"]
+        day = request.form["day"]
+        value = request.form["value"]
+        try:
+            if request.form["happy"]:
+                happy = HAPPY_FACE
+        except KeyError:
+            happy = SAD_FACE
+        raw_date = datetime(YEAR, month_no, int(day))
+        date = parse_date(raw_date)
+        entry = Shopping(userid, date, value, item, happy)
+        print(entry)
+        add_shopping_items(entry)
+        return redirect("/results")
+    return render_template(
+        "add_entry.html",
+        the_title=TITLE,
+        the_month=month,
+        the_month_data=month_data
+    )
 
 
 @app.route("/results", methods=["GET", "POST"])
 def results() -> str:
     current_userid = session["id"]
+    print("main results session id", session["id"])
     shopping_list = read_shopping_data(current_userid)
     sum_of_expenses = sum_up_expenses(shopping_list)
-
+    ready_list = repack_for_render(shopping_list)
+    # print(ready_list)
     return render_template(
         "results.html",
         the_title=TITLE,
-        shopping_list=shopping_list,
+        shopping_list=ready_list,
         sum_of_expenses=sum_of_expenses,
     )
 
@@ -142,9 +148,12 @@ if __name__ == "__main__":
 
 # Następnym razem:
 
-# testy - jak sprawdzić z plikami/bazami danych?
-# co dalej z projektem?
+# https://www.sqlite.org/lang_returning.html - przeczytać id na koniec - Nie działa
+#  dodaj id do shopping primary key auto - ok
+# interaktywny miesiąc w dodatkowe info w liście 
+# podaj miesiąc, rok ,dzien do shopping
+# miesiąc w lukę w widoku
+# https://flask.palletsprojects.com/en/2.3.x/quickstart/#variable-rules
+# do miesiąca przyciski
 
-# https://docs.python-guide.org/writing/structure/ - dostosować wymagania
-# --  id w klasie user --> Jak i po co? jest w DB autoincrement
-# dodać widok miesiąca - datetime - kratki tabela  - kiedy jest pierwszy z date time
+# https://docs.python-guide.org/writing/structure/ - dostosować wymagania - ok?

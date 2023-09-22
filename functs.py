@@ -1,13 +1,13 @@
 import calendar
 from datetime import datetime
 import sqlite3
-from flask import redirect, flash, render_template
+# from flask import redirect, flash, render_template
 from models import Shopping, Users
 
 
 HAPPY_FACE = r'<img src="https://cdn-icons-png.flaticon.com/512/214/214251.png" width=30px height=30px alt="Yes!">'
 SAD_FACE = r'<img src="https://cdn-icons-png.flaticon.com/512/982/982991.png" width=30px height=30px alt="Nope =()">'
-SHOPPING_DATA = "date, cost, item, satisfaction"
+SHOPPING_DATA = "userid, date, value, item, happy, itemID"
 TITLE = "Monthly expenses"
 
 
@@ -15,26 +15,29 @@ def db_create() -> None:
     con = sqlite3.connect("shopping.db")
     cur = con.cursor()
     cur.execute(
-        "CREATE TABLE IF NOT EXISTS purchases (userid, date, cost, item, satisfaction)"
+        "CREATE TABLE IF NOT EXISTS purchases (userid, date, value, item, happy, itemID INTEGER PRIMARY KEY AUTOINCREMENT)"
     )
     cur.execute(
-        "CREATE TABLE IF NOT EXISTS users (userid INTEGER PRIMARY KEY AUTOINCREMENT, username NOT NULL, password NOT NULL)"
+        "CREATE TABLE IF NOT EXISTS users (username NOT NULL, password NOT NULL, userid INTEGER PRIMARY KEY AUTOINCREMENT)"
     )
+    con.commit()
+    cur.close()
+    con.close()
 
 
 def add_shopping_items(entry: Shopping) -> None:
-    # [Shopping]
     userid = str(entry.userid)
     date = entry.date
-    cost = entry.value
+    value = entry.value
     item = entry.item
-    satisfaction = entry.happy
+    happy = entry.happy
     con = sqlite3.connect("shopping.db")
     cur = con.cursor()
     cur.execute(
-        "INSERT INTO purchases (userid, date, cost, item, satisfaction) values (?, ?, ?, ?, ?)",
-        (userid, date, cost, item, satisfaction),
+        "INSERT INTO purchases (userid, date, value, item, happy) values (?, ?, ?, ?, ?)",
+        (userid, date, value, item, happy)
     )
+    # dodać id zakupu z autoincrement - ok
     con.commit()
     cur.close()
     con.close()
@@ -61,10 +64,10 @@ def get_month_number(month: str) -> int:
             month_no = value
     return month_no
 
-def parse_date(date: datetime) -> str:
-    ready_date = date.strftime('%Y-%m-%d')
-    return ready_date
 
+def parse_date(date: datetime) -> str:
+    ready_date = date.strftime("%Y-%m-%d")
+    return ready_date
 
 
 def get_month_info(year, month) -> list:
@@ -82,7 +85,7 @@ def get_month_info(year, month) -> list:
     boxes_to_fill = 7 - (len(month_list) % 7)
     for _ in range(boxes_to_fill):
         month_list.append("*")
-    month_list_ready = [month_list[i:i+7] for i in range(0, len(month_list), 7)]
+    month_list_ready = [month_list[i : i + 7] for i in range(0, len(month_list), 7)]
     return month_list_ready
 
 
@@ -99,16 +102,20 @@ def add_user(new_user: Users) -> None:
     con.close()
 
 
-def get_user_id(current_username, current_password) -> int:
+# https://www.sqlite.org/lang_returning.html - przeczytać id na koniec
+
+
+def get_user(current_username, current_password) -> int:
     con = sqlite3.connect("shopping.db")
     cur = con.cursor()
-    print(current_username, current_password)
     res = cur.execute(
-        f"SELECT userid from users WHERE username ='{current_username}' AND password = '{current_password}'"
+        f"SELECT * from users WHERE username ='{current_username}' AND password = '{current_password}'"
     )
-    tuple_ = res.fetchone()
-    id = tuple_[0]
-    return id
+    user_data = res.fetchone()
+    print("functs - get user", user_data)
+    current_user = Users(username=user_data[0], password=user_data[1], id=user_data[2])
+    print("functs", current_user)
+    return current_user
 
 
 def read_users_test() -> None:
@@ -118,6 +125,14 @@ def read_users_test() -> None:
     data = res.fetchall()
     print(data)
 
+def read_shopping_test():
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    res = cur.execute("SELECT * from purchases")
+    data = res.fetchall()
+    print(data)
+    
+
 
 def read_shopping_data(current_userid):
     con = sqlite3.connect("shopping.db")
@@ -125,16 +140,39 @@ def read_shopping_data(current_userid):
     res = cur.execute(
         f"SELECT {SHOPPING_DATA} from purchases WHERE userid = '{current_userid}'"
     )
-    return res.fetchall()
+    shopping_data = res.fetchall()
+    # print("functs shopping data",shopping_data)
+    list_of_items = []
+    for e in shopping_data:
+        item = Shopping(
+            userid=e[0], date=e[1], value=e[2],item=e[3],  happy=e[4], itemID=e[5]
+        )
+        list_of_items.append(item)
+    # print(list_of_items)
+    return list_of_items
+    # pętla for row in res.fetchall() spakować do listy obiektów - ok
+
+def repack_for_render(obj_list: Shopping) -> list:
+    list_for_render = []
+    for item in obj_list:
+        # print(item)
+        single_item = []
+        single_item.append(item.date)
+        single_item.append(item.value)
+        single_item.append(item.item)
+        single_item.append(item.happy)
+        list_for_render.append(single_item)
+    return list_for_render
 
 
-def sum_up_expenses(data):
+
+def sum_up_expenses(data: Shopping) -> float:
     total = 0
-    for each in data:
-        day, value, item, satisfaction = each
-        total += float(value)
+    for item in data:
+        total += float(item.value)
     return total
 
 
 if __name__ == "__main__":
     read_users_test()
+    read_shopping_test()
