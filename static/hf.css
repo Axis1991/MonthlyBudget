@@ -21,8 +21,20 @@ body {
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
+	text-align: center;
 }
 
+.Please {
+	display: inline-table;
+	padding: 10px 20px;
+	background-color: #007bff; /* Button background color */
+	color: #fff; /* Button text color */
+	text-decoration: none;
+	border: none;
+	border-radius: 5px;
+	text-align: center;
+	width: 200px;
+}
 /* Style for when the mouse hovers over the button */
 .button-link:hover {
 	background-color: #0056b3; /* Button background color on hover */
@@ -41,7 +53,8 @@ a {
 	cursor: pointer;
 }
 a:hover {
-	text-decoration: underline;
+	background-color: #0056b3;
+	text-decoration: none;
 }
 a img {
 	border: 0;
@@ -60,13 +73,12 @@ h2 {
 	margin-right: auto;
 }
 
-td,
-th {
+td, th {
 	padding: 5px;
-	text-align: left;
 	height: 40px;
 	width: 130px;
 	text-align: center;
+	text-decoration: bold;
 }
 .copyright {
 	font-size: 75%;
@@ -81,6 +93,7 @@ th {
 }
 .form {
 	text-align: center;
+	display: inline-block;
 }
 
 /*** Tables ***/
@@ -105,16 +118,16 @@ th {
 
 /*** Inputs ***/
 input[type='text'] {
-	font-size: 115%;
-	width: 15em;
+	font-size: 100%;
+	width: 6em;
 }
 input[type='number'] {
-	font-size: 115%;
-	width: 15em;
+	font-size: 100%;
+	width: 6em;
 }
 input[type='submit'] {
-	font-size: 125%;
+	font-size: 120%;
 }
 select {
-	font-size: 125%;
+	font-size: 100%;
 }

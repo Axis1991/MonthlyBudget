@@ -7,47 +7,43 @@
 <h2> Add your purchase:</h2>
 <!-- <p class="info">Choose a day you'd like to edit</p> -->
 
-<h3> {{ the_month }} 2023</h3>
-
-<table>
-    <tr>
-        <th>Mon</th>
-        <th>Tue</th>
-        <th>Wed</th>
-        <th>Thu</th>
-        <th>Fri</th>
-        <th>Sat</th>
-        <th>Sun</th>
-    </tr>
-    {% for row in the_month_data %}
-    <tr>
-        {% for cell in row %}
-        <td>{{ cell }}</td> <!-- link do dni -->
-        {% endfor %}
-    </tr>
-    {%endfor%}
-</table>
+<h3> {{ the_month }}{{the_year}}</h3>
 
 <div class="form">
     <form method='POST' , action='/add_entry'>
         <p class="infos">Use this form to save your expenses:</p>
         <table>
             <tr>
-                <td>Day of the month:</td>
-                <td><input name='day' type='TEXT' width='60' required pattern="^\b([1-9]|[12][0-9]|3[01])\b"
-                        placeholder="Type from 1-31"></td>
+                <td>Day:</td>
+                <td><input name='day' type='TEXT' required pattern="^\b([1-9]|[12][0-9]|3[01])\b"
+                        placeholder="1-31"></td>
+                <td>Month:</td>
+                <td><select name='month' type='TEXT' required>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select></td>
+                <td>Year:</td>
+                <td><input name='year' type='TEXT' required pattern="^[1-2][9-0][0-9][0-9]"
+                        placeholder="e.g. 2023"></td>
+
             </tr>
             <tr>
                 <td>Name of the item:</td>
-                <td><input name='item' type='TEXT' width='60' required></td>
-            </tr>
-            <tr>
+                <td><input name='item' type='TEXT' required></td>
                 <td>Cost:</td>
-                <td><input name='value' type='number' step="0.01" min=0 width='60' required></td>
-            </tr>
-            <tr>
+                <td><input name='value' type='number' step="0.01" min=0 required></td>
                 <td>Am I happy with my purchase?:</td>
-                <td><input name='happy' type='checkbox' width='60'></td>
+                <td><input name='happy' type='checkbox'></td>
             </tr>
         </table>
         <p class="infos">When you're ready, click this button:</p>

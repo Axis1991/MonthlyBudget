@@ -9,6 +9,20 @@ HAPPY_FACE = r'<img src="https://cdn-icons-png.flaticon.com/512/214/214251.png" 
 SAD_FACE = r'<img src="https://cdn-icons-png.flaticon.com/512/982/982991.png" width=30px height=30px alt="Nope =()">'
 SHOPPING_DATA = "userid, date, value, item, happy, itemID"
 TITLE = "Monthly expenses"
+MONTHS_AND_NUMBERS = {
+        "January": 1,
+        "February": 2,
+        "March": 3,
+        "April": 4,
+        "May": 5,
+        "June": 6,
+        "July": 7,
+        "August": 8,
+        "September": 9,
+        "October": 10,
+        "November": 11,
+        "December": 12,
+    }
 
 
 def db_create() -> None:
@@ -44,26 +58,16 @@ def add_shopping_items(entry: Shopping) -> None:
 
 
 def get_month_number(month: str) -> int:
-    months = {
-        "January": 1,
-        "February": 2,
-        "March": 3,
-        "April": 4,
-        "May": 5,
-        "June": 6,
-        "July": 7,
-        "August": 8,
-        "September": 9,
-        "October": 10,
-        "November": 11,
-        "December": 12,
-    }
     month_no = 0
-    for key, value in months.items():
+    for key, value in MONTHS_AND_NUMBERS.items():
         if key == month:
             month_no = value
     return month_no
 
+def get_month_name(month_no: str) -> int:
+    for key, value in MONTHS_AND_NUMBERS.items():
+        if value == month_no:
+            return key
 
 def parse_date(date: datetime) -> str:
     ready_date = date.strftime("%Y-%m-%d")
@@ -88,6 +92,18 @@ def get_month_info(year, month) -> list:
     month_list_ready = [month_list[i : i + 7] for i in range(0, len(month_list), 7)]
     return month_list_ready
 
+def check_year_change(month_no):
+    if month_no == 13:
+        new_month = "January"
+        year_diff = 1
+        return new_month, year_diff
+    elif month_no == 0:
+        new_month = "December"
+        year_diff = -1
+        return new_month, year_diff
+    else:
+        pass
+
 
 def add_user(new_user: Users) -> None:
     username = new_user.username
@@ -100,9 +116,6 @@ def add_user(new_user: Users) -> None:
     con.commit()
     cur.close()
     con.close()
-
-
-# https://www.sqlite.org/lang_returning.html - przeczytać id na koniec
 
 
 def get_user(current_username, current_password) -> int:
@@ -134,23 +147,37 @@ def read_shopping_test():
     
 
 
-def read_shopping_data(current_userid):
+def read_all_shopping(current_userid):
     con = sqlite3.connect("shopping.db")
     cur = con.cursor()
     res = cur.execute(
-        f"SELECT {SHOPPING_DATA} from purchases WHERE userid = '{current_userid}'"
+        f"SELECT {SHOPPING_DATA} from purchases WHERE userid = '{current_userid}' ORDER BY date ASC"
     )
     shopping_data = res.fetchall()
-    # print("functs shopping data",shopping_data)
+    Shopping_class_data = pack_to_Shopping(shopping_data)
+    return Shopping_class_data
+
+def read_month_shopping(month: int, year:int, userid:int) -> list:
+    month = "0"+str(month) if month < 10 else month
+    date = f"{str(year)}-{month}"
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    res = cur.execute(
+        f"SELECT {SHOPPING_DATA} from purchases WHERE userid = '{userid}' AND date LIKE '{date}%'  ORDER BY date ASC"
+    )
+    month_shopping = res.fetchall()
+    Shopping_class_data = pack_to_Shopping(month_shopping)
+    return Shopping_class_data
+
+def pack_to_Shopping(shopping_data):
     list_of_items = []
     for e in shopping_data:
         item = Shopping(
             userid=e[0], date=e[1], value=e[2],item=e[3],  happy=e[4], itemID=e[5]
         )
         list_of_items.append(item)
-    # print(list_of_items)
     return list_of_items
-    # pętla for row in res.fetchall() spakować do listy obiektów - ok
+    
 
 def repack_for_render(obj_list: Shopping) -> list:
     list_for_render = []
@@ -174,5 +201,4 @@ def sum_up_expenses(data: Shopping) -> float:
 
 
 if __name__ == "__main__":
-    read_users_test()
-    read_shopping_test()
+    print(read_month_shopping(6,2023,1))

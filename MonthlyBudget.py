@@ -3,7 +3,7 @@ from flask import Flask, redirect, render_template, request, session, flash
 from functs import (
     db_create,
     add_shopping_items,
-    read_shopping_data,
+    read_all_shopping,
     sum_up_expenses,
     add_user,
     get_user,
@@ -11,6 +11,9 @@ from functs import (
     get_month_number,
     parse_date,
     repack_for_render,
+    get_month_name,
+    read_month_shopping,
+    check_year_change,
     HAPPY_FACE,
     SAD_FACE,
 )
@@ -20,8 +23,7 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = "E-)O.[1i]-U3W'c"
 
-TITLE = "Monthly expenses 2023"
-YEAR = 2023
+TITLE = "Monthly expenses"
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -84,53 +86,92 @@ def logout():
     session.pop("id", None)
     return redirect("/index")
 
-@app.route("/month_selection", methods=["GET", "POST"])
-def month_selection() -> str:
-    if request.method == "POST":
-        month = request.form["month"]
-        session["month"] = month
-        return redirect("/add_entry")
+
+@app.route("/month_view", methods=["GET", "POST"])
+def month_view() -> str:
+    print(session["month"],session["year"])
+    month_str = session["month"]
+    year = int(session["year"])
+    month = get_month_number(month_str)
+    month_data = get_month_info(year,month)
+    userid = session["id"]
+    shopping_data = read_month_shopping(month, year, userid)
+    sum_of_expenses = sum_up_expenses(shopping_data)
+    shopping_for_render = repack_for_render(shopping_data)
+
     return render_template(
-        "monthselection.html",
+        "monthview.html",
         the_title=TITLE,
+        the_month_data = month_data,
+        the_shopping_data = shopping_for_render,
+        the_month = month_str,
+        the_year = year,
+        sum_of_expenses=sum_of_expenses
     )
+
+
+@app.route("/previous_month", methods=["GET", "POST"])
+def previous_month() -> str:
+    month_str = session["month"]
+    month_no = get_month_number(month_str) - 1
+    new_month = get_month_name(month_no)
+    session["month"] = new_month
+    if month_no == 0:
+        session["month"] = "December"
+        year = int(session["year"])-1
+        session["year"] = year
+    return redirect("/month_view")
+
+
+@app.route("/next_month", methods=["GET", "POST"])
+def next_month() -> str:
+    month_str = session["month"]
+    month_no = get_month_number(month_str) + 1
+    new_month = get_month_name(month_no)
+    session["month"] = new_month
+    year = session["year"]
+    if month_no == 13:
+        session["month"] = "January"
+        year = int(session["year"])+1
+        session["year"] = year
+    return redirect("/month_view")
+
 
 @app.route("/add_entry", methods=["GET", "POST"])
 def add_entry() -> str:
     month = session["month"]
     month_no = get_month_number(month)
-    month_data = get_month_info(YEAR, month_no)
-    # dodaj info czy jest zakup
     if request.method == "POST":
-        print("main add entry session id", session["id"])
         userid = session["id"]
         item = request.form["item"]
         day = request.form["day"]
+        month = request.form["month"]
+        year = request.form["year"]
         value = request.form["value"]
         try:
             if request.form["happy"]:
                 happy = HAPPY_FACE
         except KeyError:
             happy = SAD_FACE
-        raw_date = datetime(YEAR, month_no, int(day))
+        month_no = get_month_number(month)
+        raw_date = datetime(int(year), month_no, int(day))
         date = parse_date(raw_date)
         entry = Shopping(userid, date, value, item, happy)
-        print(entry)
         add_shopping_items(entry)
-        return redirect("/results")
+        session["month"] = month
+        session["year"] = year
+        return redirect("/month_view")
     return render_template(
         "add_entry.html",
         the_title=TITLE,
-        the_month=month,
-        the_month_data=month_data
     )
 
 
 @app.route("/results", methods=["GET", "POST"])
 def results() -> str:
     current_userid = session["id"]
-    print("main results session id", session["id"])
-    shopping_list = read_shopping_data(current_userid)
+    # print("main results session id", session["id"])
+    shopping_list = read_all_shopping(current_userid)
     sum_of_expenses = sum_up_expenses(shopping_list)
     ready_list = repack_for_render(shopping_list)
     # print(ready_list)
@@ -151,9 +192,9 @@ if __name__ == "__main__":
 # https://www.sqlite.org/lang_returning.html - przeczytać id na koniec - Nie działa
 #  dodaj id do shopping primary key auto - ok
 # interaktywny miesiąc w dodatkowe info w liście 
-# podaj miesiąc, rok ,dzien do shopping
-# miesiąc w lukę w widoku
+# podaj miesiąc, rok ,dzien do shopping - ok
+# miesiąc w lukę w widoku - no idea
 # https://flask.palletsprojects.com/en/2.3.x/quickstart/#variable-rules
 # do miesiąca przyciski
 
-# https://docs.python-guide.org/writing/structure/ - dostosować wymagania - ok?
+# https://docs.python-guide.org/writing/structure/ - dostosować wymagania
