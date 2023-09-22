@@ -13,7 +13,7 @@ from functs import (
     repack_for_render,
     get_month_name,
     read_month_shopping,
-    check_year_change,
+    find_days_with_shopping,
     HAPPY_FACE,
     SAD_FACE,
 )
@@ -89,13 +89,15 @@ def logout():
 
 @app.route("/month_view", methods=["GET", "POST"])
 def month_view() -> str:
-    print(session["month"],session["year"])
+    # print(session["month"],session["year"])
     month_str = session["month"]
     year = int(session["year"])
     month = get_month_number(month_str)
-    month_data = get_month_info(year,month)
     userid = session["id"]
     shopping_data = read_month_shopping(month, year, userid)
+    days_shopping = (find_days_with_shopping(shopping_data))
+    print(days_shopping)
+    month_data = get_month_info(year,month,days_shopping)
     sum_of_expenses = sum_up_expenses(shopping_data)
     shopping_for_render = repack_for_render(shopping_data)
 
@@ -139,8 +141,8 @@ def next_month() -> str:
 
 @app.route("/add_entry", methods=["GET", "POST"])
 def add_entry() -> str:
-    month = session["month"]
-    month_no = get_month_number(month)
+    # month = session["month"]
+    # month_no = get_month_number(month)
     if request.method == "POST":
         userid = session["id"]
         item = request.form["item"]
@@ -170,8 +172,8 @@ def add_entry() -> str:
 @app.route("/results", methods=["GET", "POST"])
 def results() -> str:
     current_userid = session["id"]
-    # print("main results session id", session["id"])
     shopping_list = read_all_shopping(current_userid)
+
     sum_of_expenses = sum_up_expenses(shopping_list)
     ready_list = repack_for_render(shopping_list)
     # print(ready_list)

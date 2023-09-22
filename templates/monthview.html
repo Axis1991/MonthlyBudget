@@ -21,7 +21,12 @@
         {% for row in the_month_data %}
         <tr>
             {% for cell in row %}
-            <td>{{ cell }}</td> <!-- link do dni  -->
+                {% if "!" in cell %}
+                    {% set modified_cell = cell[:-1] %}
+                    <td class="happy">{{ modified_cell }}</td>
+                {% else %}
+                    <td>{{ cell }}</td>
+                {% endif %}
             {% endfor %}
         </tr>
         {%endfor%}
