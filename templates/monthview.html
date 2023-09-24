@@ -24,6 +24,12 @@
                 {% if "!" in cell %}
                     {% set modified_cell = cell[:-1] %}
                     <td class="happy">{{ modified_cell }}</td>
+                {% elif "@" in cell %}
+                    {% set modified_cell = cell[:-1] %}
+                    <td class="sad">{{ modified_cell }}</td>
+                {% elif "&" in cell %}
+                    {% set modified_cell = cell[:-1] %}
+                    <td class="mixed">{{ modified_cell }}</td>
                 {% else %}
                     <td>{{ cell }}</td>
                 {% endif %}

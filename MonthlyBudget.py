@@ -152,9 +152,9 @@ def add_entry() -> str:
         value = request.form["value"]
         try:
             if request.form["happy"]:
-                happy = HAPPY_FACE
+                happy = "yes"
         except KeyError:
-            happy = SAD_FACE
+            happy = "no"
         month_no = get_month_number(month)
         raw_date = datetime(int(year), month_no, int(day))
         date = parse_date(raw_date)

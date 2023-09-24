@@ -79,7 +79,6 @@ def parse_date(date: datetime) -> str:
 
 def get_month_info(year, month, days_shopping) -> list:
     weekday, no_of_days = calendar.monthrange(year, month)
-    print(days_shopping)
     skip_count = 0
     while skip_count < weekday:
         skip_count += 1
@@ -89,13 +88,13 @@ def get_month_info(year, month, days_shopping) -> list:
     day_num = 1
     for _ in range(no_of_days):
         if day_num in days_shopping:
-            month_list.append(str(day_num)+"!")
+            days_shopping[day_num] = str(day_num) + days_shopping[day_num]
+            month_list.append(days_shopping[day_num])
         else:
             month_list.append(str(day_num))
         day_num += 1
     boxes_to_fill = 7 - (len(month_list) % 7)
-    if boxes_to_fill == 7:
-        boxes_to_fill = 0
+    boxes_to_fill = 0 if boxes_to_fill == 7 else boxes_to_fill
     for _ in range(boxes_to_fill):
         month_list.append("*")
     month_list_ready = [month_list[i : i + 7] for i in range(0, len(month_list), 7)]
@@ -181,22 +180,39 @@ def pack_to_Shopping(shopping_data):
 def repack_for_render(obj_list: Shopping) -> list:
     list_for_render = []
     for item in obj_list:
-        # print(item)
         single_item = []
         single_item.append(item.date)
         single_item.append(item.value)
         single_item.append(item.item)
+        if item.happy == "yes":
+            item.happy = HAPPY_FACE
+        else:
+            item.happy = SAD_FACE
         single_item.append(item.happy)
         list_for_render.append(single_item)
     return list_for_render
 
 
 def find_days_with_shopping(shopping_list: Shopping):
-    dates_with_shopping = set([each.date for each in shopping_list])
-    dates = [datetime.strptime(each, "%Y-%m-%d") for each in dates_with_shopping]
-    days = [each.day for each in dates]
-    return days
-    
+    days = {}
+    for each in shopping_list:
+        key = each.date
+        value = each.happy
+        value = 1 if value == "yes" else -1
+        days[key] = days[key] + value if key in days else value
+    days_for_render = {}
+    for key, value in days.items():
+        if days[key] > 0:
+            value = "!"
+        elif days[key] == 0:
+            value = "&"
+        else:
+            value = "@"
+        date = datetime.strptime(key, "%Y-%m-%d")
+        day = date.day
+        days_for_render[day] = value
+    return days_for_render
+
 
 def sum_up_expenses(data: Shopping) -> float:
     total = 0
@@ -206,4 +222,12 @@ def sum_up_expenses(data: Shopping) -> float:
 
 
 if __name__ == "__main__":
-    print(read_month_shopping(6, 2023, 1))
+    shopping = read_month_shopping(6, 2023, 1)
+    print(find_days_with_shopping(shopping))
+
+
+# def find_days_with_shopping(shopping_list: Shopping):
+# dates_with_shopping = set([each.date for each in shopping_list])
+# dates = [datetime.strptime(each, "%Y-%m-%d") for each in dates_with_shopping]
+# days = [each.day for each in dates]
+# return days

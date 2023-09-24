@@ -43,6 +43,12 @@ body {
 .happy {
 	background-color: rgb(74, 217, 58);
 }
+.sad {
+	background-color: rgb(240, 65, 65);
+}
+.mixed {
+	background-color: rgb(241, 220, 63);
+}
 
 .infos {
 	text-align: center;
