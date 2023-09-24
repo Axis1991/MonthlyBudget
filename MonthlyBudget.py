@@ -14,6 +14,8 @@ from functs import (
     get_month_name,
     read_month_shopping,
     find_days_with_shopping,
+    read_daily_shopping,
+    check_month_satisfaction,
     HAPPY_FACE,
     SAD_FACE,
 )
@@ -95,9 +97,10 @@ def month_view() -> str:
     month = get_month_number(month_str)
     userid = session["id"]
     shopping_data = read_month_shopping(month, year, userid)
-    days_shopping = (find_days_with_shopping(shopping_data))
-    print(days_shopping)
-    month_data = get_month_info(year,month,days_shopping)
+    days_shopping, satisfaction = (find_days_with_shopping(shopping_data))
+    month_satisfaction = check_month_satisfaction(satisfaction)
+    print(satisfaction)
+    month_data, week_num = get_month_info(year,month,days_shopping)
     sum_of_expenses = sum_up_expenses(shopping_data)
     shopping_for_render = repack_for_render(shopping_data)
 
@@ -108,7 +111,9 @@ def month_view() -> str:
         the_shopping_data = shopping_for_render,
         the_month = month_str,
         the_year = year,
-        sum_of_expenses=sum_of_expenses
+        sum_of_expenses=sum_of_expenses,
+        the_weeks = week_num,
+        the_month_satisfaction = month_satisfaction
     )
 
 
@@ -183,6 +188,28 @@ def results() -> str:
         shopping_list=ready_list,
         sum_of_expenses=sum_of_expenses,
     )
+
+
+@app.route("/daily", methods=["GET", "POST"])
+def daily() -> str:
+    if request.method == "POST":
+        month_str = session["month"]
+        year = int(session["year"])
+        month = get_month_number(month_str)
+        userid = session["id"]
+        day = int(request.form["day"])
+        shopping_list = read_daily_shopping(month, year, day, userid)
+        sum_of_expenses = sum_up_expenses(shopping_list)
+        ready_list = repack_for_render(shopping_list)
+        return render_template(
+            "daily.html",
+            the_title=f"{month_str} {day}",
+            shopping_list=ready_list,
+            sum_of_expenses=sum_of_expenses,
+        )
+    else:
+        return redirect("/month_view")
+         
 
 
 if __name__ == "__main__":

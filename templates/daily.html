@@ -20,18 +20,10 @@
     <tr>
         <td>All expenses</td>
         <td>{{sum_of_expenses}}</td>
-        <td>
-            <a href="{{ url_for('add_entry') }}" class="button-link">Add entry</a>
-        </td>
-        <td>
+        <td colspan="2">
             <a href="{{ url_for('month_view') }}" class="button-link">Back to month view</a>
         </td>
     </tr>
 </table>
-<div class="Please">
-    <form method='POST' , action='/log_out'>
-        <input value="Log out" class="button-link" type='SUBMIT'>
-    </form>
-</div>
 
 {% endblock %}

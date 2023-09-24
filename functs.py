@@ -98,7 +98,29 @@ def get_month_info(year, month, days_shopping) -> list:
     for _ in range(boxes_to_fill):
         month_list.append("*")
     month_list_ready = [month_list[i : i + 7] for i in range(0, len(month_list), 7)]
-    return month_list_ready
+    week_num = len(month_list_ready)
+    return month_list_ready, week_num
+
+def check_month_satisfaction(month_items_satiscaction: list) -> str:
+    happy_counter = []
+    sad_counter = []
+    mixed_counter = []
+    print(month_items_satiscaction)
+    for each in month_items_satiscaction:
+        if each == "!":
+            happy_counter.append("*")
+        elif each == "@":
+            sad_counter.append("*")
+        else:
+            mixed_counter.append("*")
+    print("happy", happy_counter, "sad", sad_counter, "mixed", mixed_counter)
+    if len(happy_counter) > len(sad_counter) and len(happy_counter) > len(mixed_counter):
+        month_satisfaction = " good" 
+    elif len(sad_counter) > len(happy_counter) and len(sad_counter) > len(mixed_counter):
+        month_satisfaction = " rather disappointing"
+    else:
+        month_satisfaction = "n average"
+    return month_satisfaction
 
 
 def add_user(new_user: Users) -> None:
@@ -166,6 +188,19 @@ def read_month_shopping(month: int, year: int, userid: int) -> list:
     Shopping_class_data = pack_to_Shopping(month_shopping)
     return Shopping_class_data
 
+def read_daily_shopping(month: int, year: int, day: int, userid: int) -> list:
+    month = "0" + str(month) if month < 10 else month
+    day = "0" + str(day) if day < 10 else day
+    date = f"{str(year)}-{month}-{str(day)}"
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    res = cur.execute(
+        f"SELECT {SHOPPING_DATA} from purchases WHERE userid = '{userid}' AND date LIKE '{date}%' ORDER BY date ASC"
+    )
+    month_shopping = res.fetchall()
+    Shopping_class_data = pack_to_Shopping(month_shopping)
+    return Shopping_class_data
+
 
 def pack_to_Shopping(shopping_data):
     list_of_items = []
@@ -201,6 +236,7 @@ def find_days_with_shopping(shopping_list: Shopping):
         value = 1 if value == "yes" else -1
         days[key] = days[key] + value if key in days else value
     days_for_render = {}
+    satisfaction = []
     for key, value in days.items():
         if days[key] > 0:
             value = "!"
@@ -208,10 +244,11 @@ def find_days_with_shopping(shopping_list: Shopping):
             value = "&"
         else:
             value = "@"
+        satisfaction .append(value)
         date = datetime.strptime(key, "%Y-%m-%d")
         day = date.day
         days_for_render[day] = value
-    return days_for_render
+    return days_for_render, satisfaction
 
 
 def sum_up_expenses(data: Shopping) -> float:

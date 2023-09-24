@@ -21,22 +21,37 @@
         {% for row in the_month_data %}
         <tr>
             {% for cell in row %}
-                {% if "!" in cell %}
-                    {% set modified_cell = cell[:-1] %}
-                    <td class="happy">{{ modified_cell }}</td>
-                {% elif "@" in cell %}
-                    {% set modified_cell = cell[:-1] %}
-                    <td class="sad">{{ modified_cell }}</td>
-                {% elif "&" in cell %}
-                    {% set modified_cell = cell[:-1] %}
-                    <td class="mixed">{{ modified_cell }}</td>
-                {% else %}
-                    <td>{{ cell }}</td>
-                {% endif %}
+            {% if "!" in cell %}
+            {% set modified_cell = cell[:-1] %}
+            <td class="happy">
+                <form method='POST' action='/daily'><input name ='day' value="{{ modified_cell }}"
+                        class="shoppingcell happy-shoppingcell" type='SUBMIT'>
+                </form>
+            </td>
+            {% elif "@" in cell %}
+            {% set modified_cell = cell[:-1] %}
+            <td class="sad">
+                <form method='POST' action='/daily'><input name ='day' value="{{ modified_cell }}"
+                        class="shoppingcell sad-shoppingcell" type='SUBMIT'>
+                </form>
+            </td>
+            {% elif "&" in cell %}
+            {% set modified_cell = cell[:-1] %}
+            <td class="mixed">
+                <form method='POST' action='/daily'><input name ='day' value="{{ modified_cell }}"
+                        class="shoppingcell mixed-shoppingcell" type='SUBMIT'>
+                </form>
+            </td>
+            {% else %}
+            <td>{{ cell }}</td>
+            {% endif %}
             {% endfor %}
         </tr>
         {%endfor%}
     </table>
+    {% if the_weeks == 5 %}
+        <p style="font-size: 4.73em;">  </p>
+    {% endif %}
     <div>
         <div class="Please">
             <form method='POST' , action='/previous_month'>
@@ -50,7 +65,8 @@
         </div>
     </div>
 </div>
-<br><br><br>
+
+<h2>It looks like a{{ the_month_satisfaction }} month.<br></h2>
 
 <table>
     <tr>
@@ -78,11 +94,7 @@
         </td>
     </tr>
 </table>
-<div class="Please">
-    <form method='POST' , action='/log_out'>
-        <input value="Log out" class="button-link" type='SUBMIT'>
-    </form>
-</div>
+
 
 
 {% endblock %}
