@@ -16,8 +16,8 @@ from functs import (
     find_days_with_shopping,
     read_daily_shopping,
     check_month_satisfaction,
-    HAPPY_FACE,
-    SAD_FACE,
+    allexp_repack_for_render,
+    check_unique_username
 )
 from models import Shopping, Users
 import sqlite3
@@ -44,10 +44,14 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        new_user = Users(username, password)
-        add_user(new_user)
-        return redirect("/login")
-
+        try: 
+            check_unique_username(username)
+            new_user = Users(username, password)
+            add_user(new_user)
+            return redirect("/login")
+        except ValueError:
+            flash("Username already registered. Please choose a different one.")
+            render_template("register.html", the_title=TITLE)
     return render_template("register.html", the_title=TITLE)
 
 
@@ -86,14 +90,34 @@ def logout():
     session.pop("username", None)
     session.pop("password", None)
     session.pop("id", None)
+    session.pop("month", None)
+    session.pop("year", None)
     return redirect("/index")
+
+
+@app.route("/change_session", methods=["GET", "POST"])
+def change_session():
+    month = request.form["month"]
+    if month[0] == '0':
+        month=(month[1:])
+    year = request.form["year"]
+    session["year"] = year
+    session["month"] = get_month_name(int(month))
+    return redirect("/month_view")
 
 
 @app.route("/month_view", methods=["GET", "POST"])
 def month_view() -> str:
-    # print(session["month"],session["year"])
-    month_str = session["month"]
-    year = int(session["year"])
+    try:
+        month_str = session["month"]
+        year = int(session["year"]) 
+    except KeyError:
+        today = datetime.now()
+        month = today.month
+        session["month"] = get_month_name(month)
+        month_str = session["month"]
+        year = today.year
+        session["year"] = year
     month = get_month_number(month_str)
     userid = session["id"]
     shopping_data = read_month_shopping(month, year, userid)
@@ -146,8 +170,6 @@ def next_month() -> str:
 
 @app.route("/add_entry", methods=["GET", "POST"])
 def add_entry() -> str:
-    # month = session["month"]
-    # month_no = get_month_number(month)
     if request.method == "POST":
         userid = session["id"]
         item = request.form["item"]
@@ -178,9 +200,8 @@ def add_entry() -> str:
 def results() -> str:
     current_userid = session["id"]
     shopping_list = read_all_shopping(current_userid)
-
     sum_of_expenses = sum_up_expenses(shopping_list)
-    ready_list = repack_for_render(shopping_list)
+    ready_list = allexp_repack_for_render(shopping_list)
     # print(ready_list)
     return render_template(
         "results.html",

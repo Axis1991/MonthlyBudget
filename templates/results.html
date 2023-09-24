@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
 
-<h2>{{ the_title }}</h2>
+<h2> All expenses </h2>
 
 <table>
     <tr>
@@ -13,7 +13,20 @@
     {% for row in shopping_list %}
     <tr>
         {% for cell in row %}
-        <td>{{ cell|safe }}</td>
+        {% if "$%^" in cell %}
+        {% set new_cell = cell[3:] %}
+        {% set month = cell[8:10] %}
+        {% set year = cell[3:7] %}
+        <td>
+            <form method='POST' action='/change_session'><input name='data' value="{{ new_cell }}" class="shoppingcell date-shoppingcell"
+                    type='SUBMIT'>
+                <input type="hidden" name="month" value="{{ month }}">
+                <input type="hidden" name="year" value="{{ year }}">
+            </form>
+        </td>
+        {% else %}
+        <td>{{cell|safe }}</td>
+        {% endif %}
         {% endfor %}
     </tr>
     {% endfor %}

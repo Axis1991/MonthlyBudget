@@ -2,7 +2,7 @@ body {
 	text-align: center;
 	font-family: Verdana, Geneva, Arial, sans-serif;
 	font-size: medium;
-	background-color: rgb(219, 140, 186);
+	background-color: rgb(161, 212, 114);
 	margin-top: 5%;
 	margin-bottom: 5%;
 	margin-left: 10%;
@@ -34,6 +34,7 @@ body {
 	border-radius: 5px;
 	text-align: center;
 	width: 200px;
+	font-size: 120%;
 }
 /* Style for when the mouse hovers over the button */
 .button-link:hover {
@@ -56,6 +57,10 @@ body {
 	border-radius: 5px;
 	text-align: center;
 	cursor: pointer;
+}
+
+.date-shoppingcell {
+	background-color: #a2bce2;
 }
 
 .happy-shoppingcell {
@@ -169,7 +174,7 @@ input[type='number'] {
 	width: 6em;
 }
 input[type='submit'] {
-	font-size: 120%;
+	font-size: 100%;
 }
 select {
 	font-size: 100%;

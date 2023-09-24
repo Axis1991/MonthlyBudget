@@ -136,6 +136,20 @@ def add_user(new_user: Users) -> None:
     con.close()
 
 
+def check_unique_username(username: str)-> None:
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    cur.execute(
+        "SELECT COUNT(*) FROM users WHERE username = ?", (username,)
+    )
+    count = cur.fetchone()[0]
+    if count > 0:
+        raise ValueError
+    else:
+        pass
+
+
+
 def get_user(current_username, current_password) -> int:
     con = sqlite3.connect("shopping.db")
     cur = con.cursor()
@@ -217,6 +231,21 @@ def repack_for_render(obj_list: Shopping) -> list:
     for item in obj_list:
         single_item = []
         single_item.append(item.date)
+        single_item.append(item.value)
+        single_item.append(item.item)
+        if item.happy == "yes":
+            item.happy = HAPPY_FACE
+        else:
+            item.happy = SAD_FACE
+        single_item.append(item.happy)
+        list_for_render.append(single_item)
+    return list_for_render
+
+def allexp_repack_for_render(obj_list: Shopping) -> list:
+    list_for_render = []
+    for item in obj_list:
+        single_item = []
+        single_item.append("$%^"+item.date)
         single_item.append(item.value)
         single_item.append(item.item)
         if item.happy == "yes":
