@@ -13,10 +13,10 @@
     {% for row in shopping_list %}
     <tr>
         {% for cell in row %}
-        {% if "$%^" in cell %}
-        {% set new_cell = cell[3:] %}
-        {% set month = cell[8:10] %}
-        {% set year = cell[3:7] %}
+        {% if "-$%^" in cell %}
+        {% set new_cell = cell[4:] %}
+        {% set month = cell[9:11] %}
+        {% set year = cell[4:8] %}
         <td>
             <form method='POST' action='/change_session'><input name='data' value="{{ new_cell }}" class="shoppingcell date-shoppingcell"
                     type='SUBMIT'>

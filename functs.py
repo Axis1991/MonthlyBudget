@@ -1,8 +1,6 @@
 import calendar
 from datetime import datetime
 import sqlite3
-
-# from flask import redirect, flash, render_template
 from models import Shopping, Users
 
 
@@ -26,6 +24,78 @@ MONTHS_AND_NUMBERS = {
 }
 
 
+def add_shopping_items(entry: Shopping) -> None:
+    userid = str(entry.userid)
+    date = entry.date
+    value = entry.value
+    item = entry.item
+    happy = entry.happy
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    cur.execute(
+        "INSERT INTO purchases (userid, date, value, item, happy) values (?, ?, ?, ?, ?)",
+        (userid, date, value, item, happy),
+    )
+    con.commit()
+    cur.close()
+    con.close()
+
+
+def add_user(new_user: Users) -> None:
+    username = new_user.username
+    password = new_user.password
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    cur.execute(
+        "INSERT INTO users (username, password) values (?, ?)", (username, password)
+    )
+    con.commit()
+    cur.close()
+    con.close()
+
+
+def check_month_satisfaction(month_items_satiscaction: list) -> str:
+    happy_counter = []
+    sad_counter = []
+    mixed_counter = []
+    for each in month_items_satiscaction:
+        if each == "!":
+            happy_counter.append("*")
+        elif each == "@":
+            sad_counter.append("*")
+        else:
+            mixed_counter.append("*")
+    if len(happy_counter) > len(sad_counter) and len(happy_counter) > len(mixed_counter):
+        month_satisfaction = " good" 
+    elif len(sad_counter) > len(happy_counter) and len(sad_counter) > len(mixed_counter):
+        month_satisfaction = " rather disappointing"
+    else:
+        month_satisfaction = "n average"
+    return month_satisfaction
+
+
+def check_month_length(day:int, month: int, year: int) -> None:
+    weekday, no_of_days = calendar.monthrange(year, month)
+    if day > no_of_days:
+        raise ValueError
+    else:
+        pass
+
+
+
+def check_unique_username(username: str)-> None:
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    cur.execute(
+        "SELECT COUNT(*) FROM users WHERE username = ?", (username,)
+    )
+    count = cur.fetchone()[0]
+    if count > 0:
+        raise ValueError
+    else:
+        pass
+
+
 def db_create() -> None:
     con = sqlite3.connect("shopping.db")
     cur = con.cursor()
@@ -40,44 +110,31 @@ def db_create() -> None:
     con.close()
 
 
-def add_shopping_items(entry: Shopping) -> None:
-    userid = str(entry.userid)
-    date = entry.date
-    value = entry.value
-    item = entry.item
-    happy = entry.happy
-    con = sqlite3.connect("shopping.db")
-    cur = con.cursor()
-    cur.execute(
-        "INSERT INTO purchases (userid, date, value, item, happy) values (?, ?, ?, ?, ?)",
-        (userid, date, value, item, happy),
-    )
-    # dodać id zakupu z autoincrement - ok
-    con.commit()
-    cur.close()
-    con.close()
+
+def find_days_with_shopping(shopping_list: Shopping)-> dict|list:
+    days = {}
+    for each in shopping_list:
+        key = each.date
+        value = each.happy
+        value = 1 if value == "yes" else -1
+        days[key] = days[key] + value if key in days else value
+    days_for_render = {}
+    satisfaction = []
+    for key, value in days.items():
+        if days[key] > 0:
+            value = "!"
+        elif days[key] == 0:
+            value = "&"
+        else:
+            value = "@"
+        satisfaction .append(value)
+        date = datetime.strptime(key, "%Y-%m-%d")
+        day = date.day
+        days_for_render[day] = value
+    return days_for_render, satisfaction
 
 
-def get_month_number(month: str) -> int:
-    month_no = 0
-    for key, value in MONTHS_AND_NUMBERS.items():
-        if key == month:
-            month_no = value
-    return month_no
-
-
-def get_month_name(month_no: str) -> int:
-    for key, value in MONTHS_AND_NUMBERS.items():
-        if value == month_no:
-            return key
-
-
-def parse_date(date: datetime) -> str:
-    ready_date = date.strftime("%Y-%m-%d")
-    return ready_date
-
-
-def get_month_info(year, month, days_shopping) -> list:
+def get_month_info(year: int, month: int, days_shopping) -> list:
     weekday, no_of_days = calendar.monthrange(year, month)
     skip_count = 0
     while skip_count < weekday:
@@ -101,53 +158,19 @@ def get_month_info(year, month, days_shopping) -> list:
     week_num = len(month_list_ready)
     return month_list_ready, week_num
 
-def check_month_satisfaction(month_items_satiscaction: list) -> str:
-    happy_counter = []
-    sad_counter = []
-    mixed_counter = []
-    print(month_items_satiscaction)
-    for each in month_items_satiscaction:
-        if each == "!":
-            happy_counter.append("*")
-        elif each == "@":
-            sad_counter.append("*")
-        else:
-            mixed_counter.append("*")
-    print("happy", happy_counter, "sad", sad_counter, "mixed", mixed_counter)
-    if len(happy_counter) > len(sad_counter) and len(happy_counter) > len(mixed_counter):
-        month_satisfaction = " good" 
-    elif len(sad_counter) > len(happy_counter) and len(sad_counter) > len(mixed_counter):
-        month_satisfaction = " rather disappointing"
-    else:
-        month_satisfaction = "n average"
-    return month_satisfaction
 
+def get_month_name(month_no: str) -> int:
+    for key, value in MONTHS_AND_NUMBERS.items():
+        if value == month_no:
+            return key
+        
 
-def add_user(new_user: Users) -> None:
-    username = new_user.username
-    password = new_user.password
-    con = sqlite3.connect("shopping.db")
-    cur = con.cursor()
-    cur.execute(
-        "INSERT INTO users (username, password) values (?, ?)", (username, password)
-    )
-    con.commit()
-    cur.close()
-    con.close()
-
-
-def check_unique_username(username: str)-> None:
-    con = sqlite3.connect("shopping.db")
-    cur = con.cursor()
-    cur.execute(
-        "SELECT COUNT(*) FROM users WHERE username = ?", (username,)
-    )
-    count = cur.fetchone()[0]
-    if count > 0:
-        raise ValueError
-    else:
-        pass
-
+def get_month_number(month: str) -> int:
+    month_no = 0
+    for key, value in MONTHS_AND_NUMBERS.items():
+        if key == month:
+            month_no = value
+    return month_no
 
 
 def get_user(current_username, current_password) -> int:
@@ -163,20 +186,19 @@ def get_user(current_username, current_password) -> int:
     return current_user
 
 
-def read_users_test() -> None:
-    con = sqlite3.connect("shopping.db")
-    cur = con.cursor()
-    res = cur.execute("SELECT * from users")
-    data = res.fetchall()
-    print(data)
+def pack_to_Shopping(shopping_data):
+    list_of_items = []
+    for e in shopping_data:
+        item = Shopping(
+            userid=e[0], date=e[1], value=e[2], item=e[3], happy=e[4], itemID=e[5]
+        )
+        list_of_items.append(item)
+    return list_of_items
 
 
-def read_shopping_test():
-    con = sqlite3.connect("shopping.db")
-    cur = con.cursor()
-    res = cur.execute("SELECT * from purchases")
-    data = res.fetchall()
-    print(data)
+def parse_date(date: datetime) -> str:
+    ready_date = date.strftime("%Y-%m-%d")
+    return ready_date
 
 
 def read_all_shopping(current_userid):
@@ -189,18 +211,6 @@ def read_all_shopping(current_userid):
     Shopping_class_data = pack_to_Shopping(shopping_data)
     return Shopping_class_data
 
-
-def read_month_shopping(month: int, year: int, userid: int) -> list:
-    month = "0" + str(month) if month < 10 else month
-    date = f"{str(year)}-{month}"
-    con = sqlite3.connect("shopping.db")
-    cur = con.cursor()
-    res = cur.execute(
-        f"SELECT {SHOPPING_DATA} from purchases WHERE userid = '{userid}' AND date LIKE '{date}%'  ORDER BY date ASC"
-    )
-    month_shopping = res.fetchall()
-    Shopping_class_data = pack_to_Shopping(month_shopping)
-    return Shopping_class_data
 
 def read_daily_shopping(month: int, year: int, day: int, userid: int) -> list:
     month = "0" + str(month) if month < 10 else month
@@ -216,14 +226,33 @@ def read_daily_shopping(month: int, year: int, day: int, userid: int) -> list:
     return Shopping_class_data
 
 
-def pack_to_Shopping(shopping_data):
-    list_of_items = []
-    for e in shopping_data:
-        item = Shopping(
-            userid=e[0], date=e[1], value=e[2], item=e[3], happy=e[4], itemID=e[5]
-        )
-        list_of_items.append(item)
-    return list_of_items
+def read_month_shopping(month: int, year: int, userid: int) -> list:
+    month = "0" + str(month) if month < 10 else month
+    date = f"{str(year)}-{month}"
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    res = cur.execute(
+        f"SELECT {SHOPPING_DATA} from purchases WHERE userid = '{userid}' AND date LIKE '{date}%'  ORDER BY date ASC"
+    )
+    month_shopping = res.fetchall()
+    Shopping_class_data = pack_to_Shopping(month_shopping)
+    return Shopping_class_data
+
+
+def repack_all_for_render(obj_list: Shopping) -> list:
+    list_for_render = []
+    for item in obj_list:
+        single_item = []
+        single_item.append("-$%^"+item.date)
+        single_item.append(item.value)
+        single_item.append(item.item)
+        if item.happy == "yes":
+            item.happy = HAPPY_FACE
+        else:
+            item.happy = SAD_FACE
+        single_item.append(item.happy)
+        list_for_render.append(single_item)
+    return list_for_render
 
 
 def repack_for_render(obj_list: Shopping) -> list:
@@ -241,44 +270,6 @@ def repack_for_render(obj_list: Shopping) -> list:
         list_for_render.append(single_item)
     return list_for_render
 
-def allexp_repack_for_render(obj_list: Shopping) -> list:
-    list_for_render = []
-    for item in obj_list:
-        single_item = []
-        single_item.append("$%^"+item.date)
-        single_item.append(item.value)
-        single_item.append(item.item)
-        if item.happy == "yes":
-            item.happy = HAPPY_FACE
-        else:
-            item.happy = SAD_FACE
-        single_item.append(item.happy)
-        list_for_render.append(single_item)
-    return list_for_render
-
-
-def find_days_with_shopping(shopping_list: Shopping):
-    days = {}
-    for each in shopping_list:
-        key = each.date
-        value = each.happy
-        value = 1 if value == "yes" else -1
-        days[key] = days[key] + value if key in days else value
-    days_for_render = {}
-    satisfaction = []
-    for key, value in days.items():
-        if days[key] > 0:
-            value = "!"
-        elif days[key] == 0:
-            value = "&"
-        else:
-            value = "@"
-        satisfaction .append(value)
-        date = datetime.strptime(key, "%Y-%m-%d")
-        day = date.day
-        days_for_render[day] = value
-    return days_for_render, satisfaction
-
 
 def sum_up_expenses(data: Shopping) -> float:
     total = 0
@@ -290,10 +281,3 @@ def sum_up_expenses(data: Shopping) -> float:
 if __name__ == "__main__":
     shopping = read_month_shopping(6, 2023, 1)
     print(find_days_with_shopping(shopping))
-
-
-# def find_days_with_shopping(shopping_list: Shopping):
-# dates_with_shopping = set([each.date for each in shopping_list])
-# dates = [datetime.strptime(each, "%Y-%m-%d") for each in dates_with_shopping]
-# days = [each.day for each in dates]
-# return days

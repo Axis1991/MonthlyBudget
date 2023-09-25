@@ -7,16 +7,24 @@
 <h2> Add your purchase:</h2>
 <!-- <p class="info">Choose a day you'd like to edit</p> -->
 
-<h3> {{ the_month }}{{the_year}}</h3>
+<div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <p class="warning">{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
 
-<div class="form">
+<div>
     <form method='POST' , action='/add_entry'>
         <p class="infos">Use this form to save your expenses:</p>
         <table>
             <tr>
                 <td>Day:</td>
-                <td><input name='day' type='TEXT' required pattern="^\b([1-9]|[12][0-9]|3[01])\b"
-                        placeholder="1-31"></td>
+                <td><input name='day' type='TEXT' required pattern="^\b([1-9]|[12][0-9]|3[01])\b" placeholder="1-31">
+                </td>
                 <td>Month:</td>
                 <td><select name='month' type='TEXT' required>
                         <option value="January">January</option>
@@ -33,8 +41,8 @@
                         <option value="December">December</option>
                     </select></td>
                 <td>Year:</td>
-                <td><input name='year' type='TEXT' required pattern="^[1-2][9-0][0-9][0-9]"
-                        placeholder="e.g. 2023"></td>
+                <td><input name='year' type='TEXT' required pattern="^[1-2][9-0][0-9][0-9]" placeholder="e.g. 2023">
+                </td>
 
             </tr>
             <tr>
@@ -47,8 +55,14 @@
             </tr>
         </table>
         <p class="infos">When you're ready, click this button:</p>
-        <p><input value='Add expense' class="button-link" type='SUBMIT'></p>
+        <div>
+            <div class="Please">
+                <input value="Add expense" class="button-link" type='SUBMIT'>
     </form>
+</div>
+<div class="Please">
+        <a href="{{ url_for('month_view') }}" class="button-link">Month view</a>  
+</div>
 </div>
 
 {% endblock %}
