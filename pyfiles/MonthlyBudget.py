@@ -10,6 +10,7 @@ from functs import (
     check_month_satisfaction,
     check_unique_username,
     db_create,
+    delete_shopping_entry,
     find_days_with_shopping,
     get_month_info,
     get_month_name,
@@ -104,6 +105,12 @@ def daily() -> str:
         )
     else:
         return redirect("/month_view")
+    
+@app.route("/delete_entry", methods=["GET", "POST"])
+def delete_entry():
+    id_to_delete = int(request.form["id_to_delete"])
+    delete_shopping_entry(id_to_delete)
+    return redirect("/month_view")
 
 
 @app.route("/login", methods=["GET", "POST"])

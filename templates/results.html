@@ -9,6 +9,7 @@
         <th>Value</th>
         <th>Item</th>
         <th>Worth it?</th>
+        <th> </th>
     </tr>
     {% for row in shopping_list %}
     <tr>
@@ -18,10 +19,19 @@
         {% set month = cell[9:11] %}
         {% set year = cell[4:8] %}
         <td>
-            <form method='POST' action='/change_session'><input name='data' value="{{ new_cell }}" class="shoppingcell date-shoppingcell"
-                    type='SUBMIT'>
+            <form method='POST' action='/change_session'><input name='data' value="{{ new_cell }}"
+                    class="shoppingcell date-shoppingcell" type='SUBMIT'>
                 <input type="hidden" name="month" value="{{ month }}">
                 <input type="hidden" name="year" value="{{ year }}">
+            </form>
+        </td>
+        {% elif "&*@!" in cell%}
+        {% set new_cell = cell[4:] %}
+        {% set delete_button = "Delete" %}
+        <td>
+            <form method='POST' action='/delete_entry'><input value="{{ delete_button }}" class="button-link"
+                    type='SUBMIT'>
+                <input type="hidden" name="id_to_delete" value="{{ new_cell }}">
             </form>
         </td>
         {% else %}
@@ -36,7 +46,7 @@
         <td>
             <a href="{{ url_for('add_entry') }}" class="button-link">Add entry</a>
         </td>
-        <td>
+        <td colspan="2">
             <a href="{{ url_for('month_view') }}" class="button-link">Back to month view</a>
         </td>
     </tr>

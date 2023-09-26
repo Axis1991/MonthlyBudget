@@ -90,6 +90,8 @@ def check_unique_username(username: str)-> None:
         "SELECT COUNT(*) FROM users WHERE username = ?", (username,)
     )
     count = cur.fetchone()[0]
+    cur.close()
+    con.close()
     if count > 0:
         raise ValueError
     else:
@@ -105,6 +107,17 @@ def db_create() -> None:
     cur.execute(
         "CREATE TABLE IF NOT EXISTS users (username NOT NULL, password NOT NULL, userid INTEGER PRIMARY KEY AUTOINCREMENT)"
     )
+    con.commit()
+    cur.close()
+    con.close()
+
+
+def delete_shopping_entry(itemID: int)-> None:
+    con = sqlite3.connect("shopping.db")
+    cur = con.cursor()
+    cur.execute(
+        f"DELETE FROM purchases WHERE itemID = '{itemID}'"
+        )
     con.commit()
     cur.close()
     con.close()
@@ -251,6 +264,7 @@ def repack_all_for_render(obj_list: Shopping) -> list:
         else:
             item.happy = SAD_FACE
         single_item.append(item.happy)
+        single_item.append("&*@!"+str(item.itemID))
         list_for_render.append(single_item)
     return list_for_render
 
@@ -267,6 +281,7 @@ def repack_for_render(obj_list: Shopping) -> list:
         else:
             item.happy = SAD_FACE
         single_item.append(item.happy)
+        single_item.append("&*@!"+str(item.itemID))
         list_for_render.append(single_item)
     return list_for_render
 

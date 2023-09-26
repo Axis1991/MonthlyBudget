@@ -13,7 +13,18 @@
     {% for row in shopping_list %}
     <tr>
         {% for cell in row %}
-        <td>{{ cell|safe }}</td>
+        {% if "&*@!" in cell%}
+        {% set new_cell = cell[4:] %}
+        {% set delete_button = "Delete" %}
+        <td>
+            <form method='POST' action='/delete_entry'><input value="{{ delete_button }}" class="button-link"
+                    type='SUBMIT'>
+                <input type="hidden" name="id_to_delete" value="{{ new_cell }}">
+            </form>
+        </td>
+        {% else %}
+        <td>{{cell|safe }}</td>
+        {% endif %}
         {% endfor %}
     </tr>
     {% endfor %}

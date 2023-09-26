@@ -24,21 +24,21 @@
             {% if "!" in cell %}
             {% set modified_cell = cell[:-1] %}
             <td class="happy">
-                <form method='POST' action='/daily'><input name ='day' value="{{ modified_cell }}"
+                <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
                         class="shoppingcell happy-shoppingcell" type='SUBMIT'>
                 </form>
             </td>
             {% elif "@" in cell %}
             {% set modified_cell = cell[:-1] %}
             <td class="sad">
-                <form method='POST' action='/daily'><input name ='day' value="{{ modified_cell }}"
+                <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
                         class="shoppingcell sad-shoppingcell" type='SUBMIT'>
                 </form>
             </td>
             {% elif "&" in cell %}
             {% set modified_cell = cell[:-1] %}
             <td class="mixed">
-                <form method='POST' action='/daily'><input name ='day' value="{{ modified_cell }}"
+                <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
                         class="shoppingcell mixed-shoppingcell" type='SUBMIT'>
                 </form>
             </td>
@@ -50,7 +50,7 @@
         {%endfor%}
     </table>
     {% if the_weeks == 5 %}
-        <p style="font-size: 4.73em;">  </p>
+    <p style="font-size: 4.73em;"> </p>
     {% endif %}
     <div>
         <div class="Please">
@@ -74,11 +74,22 @@
         <th>Value</th>
         <th>Item</th>
         <th>Worth it?</th>
+        <th> </th>
     </tr>
     {% for row in the_shopping_data %}
     <tr>
         {% for cell in row %}
+        {% if "&*@!" in cell%}
+        {% set new_cell = cell[4:] %}
+        {% set delete_button = "Delete" %}
+        <td>
+            <form method='POST' action='/delete_entry'><input value="{{ delete_button }}" class="button-link" type='SUBMIT'>
+            <input type="hidden" name="id_to_delete" value="{{ new_cell }}">
+            </form>
+        </td>
+        {% else %}
         <td>{{ cell|safe }}</td>
+        {% endif %}
         {% endfor %}
     </tr>
     {% endfor %}
@@ -88,7 +99,7 @@
         <td>
             <a href="{{ url_for('add_entry') }}" class="button-link">Add entry</a>
         </td>
-        <td>
+        <td colspan="2">
             <form method='POST' action='/results'><input value="See everything" type='SUBMIT' class="button-link">
             </form>
         </td>
