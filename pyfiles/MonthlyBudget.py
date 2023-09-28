@@ -152,8 +152,9 @@ def logout():
     return redirect("/index")
 
 
-@app.route("/month_view", methods=["GET", "POST"])
-def month_view() -> str:
+@app.route("/month_view/<useryear>", methods=["GET", "POST"])
+def month_view(useryear) -> str:
+    print(useryear)
     try:
         month_str = session["month"]
         year = int(session["year"])
