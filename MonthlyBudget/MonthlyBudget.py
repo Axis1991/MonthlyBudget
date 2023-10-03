@@ -19,6 +19,7 @@ from functs import (
     parse_date,
     read_all_shopping,
     read_daily_shopping,
+    read_date_from_url,
     read_month_shopping,
     repack_all_for_render,
     repack_for_render,
@@ -66,9 +67,8 @@ def add_entry() -> str:
         date = parse_date(raw_date)
         entry = Shopping(userid, date, value, item, happy)
         add_shopping_items(entry)
-        session["month"] = month
-        session["year"] = year
-        return redirect("/month_view")
+        userdate = str(year) + "-" + str(month_no)
+        return redirect(f"/month_view/{userdate}")
     return render_template(
         "add_entry.html",
         the_title=TITLE,
@@ -78,20 +78,17 @@ def add_entry() -> str:
 @app.route("/change_session", methods=["GET", "POST"])
 def change_session():
     month = request.form["month"]
-    if month[0] == "0":
-        month = month[1:]
     year = request.form["year"]
-    session["year"] = year
-    session["month"] = get_month_name(int(month))
-    return redirect("/month_view")
+    userdate = str(year) + "-" + str(month)
+    return redirect(f"/month_view/{userdate}")
 
 
 @app.route("/daily", methods=["GET", "POST"])
 def daily() -> str:
     if request.method == "POST":
-        month_str = session["month"]
-        year = int(session["year"])
-        month = get_month_number(month_str)
+        month_name = request.form["month"]
+        year = request.form["year"]
+        month = get_month_number(month_name)
         userid = session["id"]
         day = int(request.form["day"])
         shopping_list = read_daily_shopping(month, year, day, userid)
@@ -99,18 +96,21 @@ def daily() -> str:
         ready_list = repack_for_render(shopping_list)
         return render_template(
             "daily.html",
-            the_title=f"{month_str} {day}",
+            the_day = day,
+            the_month = month,
+            the_month_name = month_name,
+            the_year = year,
             shopping_list=ready_list,
             sum_of_expenses=sum_of_expenses,
         )
     else:
-        return redirect("/month_view")
+        return redirect("/month_view/<userdata>")
     
 @app.route("/delete_entry", methods=["GET", "POST"])
 def delete_entry():
     id_to_delete = int(request.form["id_to_delete"])
     delete_shopping_entry(id_to_delete)
-    return redirect("/month_view")
+    return redirect("/results")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -121,7 +121,6 @@ def login():
         try:
             current_user = get_user(session["username"], session["password"])
             session["id"] = current_user.id
-            # print("main - session id", current_user.id)
             return redirect("/index")
         except sqlite3.OperationalError:
             flash("Username or password are incorrect, or there is no such account.")
@@ -147,25 +146,24 @@ def logout():
     session.pop("username", None)
     session.pop("password", None)
     session.pop("id", None)
-    session.pop("month", None)
-    session.pop("year", None)
     return redirect("/index")
 
+@app.route("/month_view/", methods=["GET", "POST"])
+def go_with_variables():
+    return redirect("/month_view/<userdate>")
 
-@app.route("/month_view/<useryear>", methods=["GET", "POST"])
-def month_view(useryear) -> str:
-    print(useryear)
+@app.route("/month_view/<userdate>", methods=["GET", "POST"])
+def month_view(userdate) -> str:
     try:
-        month_str = session["month"]
-        year = int(session["year"])
-    except KeyError:
+        year_str, month_num_str = read_date_from_url(userdate)
+        year = int(year_str)
+        month = int(month_num_str)
+    except ValueError:
         today = datetime.now()
         month = today.month
-        session["month"] = get_month_name(month)
-        month_str = session["month"]
         year = today.year
-        session["year"] = year
-    month = get_month_number(month_str)
+        userdate=str(year)+"-"+str(month)
+    month_str = get_month_name(month)
     userid = session["id"]
     shopping_data = read_month_shopping(month, year, userid)
     days_for_render, satisfaction = find_days_with_shopping(shopping_data)
@@ -189,29 +187,26 @@ def month_view(useryear) -> str:
 
 @app.route("/previous_month", methods=["GET", "POST"])
 def previous_month() -> str:
-    month_str = session["month"]
-    month_no = get_month_number(month_str) - 1
-    new_month = get_month_name(month_no)
-    session["month"] = new_month
-    if month_no == 0:
-        session["month"] = "December"
-        year = int(session["year"]) - 1
-        session["year"] = year
-    return redirect("/month_view")
+    month_name = request.form["month"]
+    month = get_month_number(month_name) - 1
+    year = int(request.form["year"])
+    if month == 0:
+        month = 12
+        year -= 1
+    userdate=str(year)+"-"+str(month)
+    return redirect(f"/month_view/{userdate}")
 
 
 @app.route("/next_month", methods=["GET", "POST"])
 def next_month() -> str:
-    month_str = session["month"]
-    month_no = get_month_number(month_str) + 1
-    new_month = get_month_name(month_no)
-    session["month"] = new_month
-    year = session["year"]
-    if month_no == 13:
-        session["month"] = "January"
-        year = int(session["year"]) + 1
-        session["year"] = year
-    return redirect("/month_view")
+    month_name = request.form["month"]
+    month = get_month_number(month_name) + 1
+    year = int(request.form["year"])
+    if month == 13:
+        month = 1
+        year += 1
+    userdate=str(year)+"-"+str(month)
+    return redirect(f"/month_view/{userdate}")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -233,6 +228,10 @@ def register():
 @app.route("/results", methods=["GET", "POST"])
 def results() -> str:
     current_userid = session["id"]
+    today = datetime.now()
+    year = today.year
+    month = today.month
+    userdate = f"{year-month}"
     shopping_list = read_all_shopping(current_userid)
     sum_of_expenses = sum_up_expenses(shopping_list)
     ready_list = repack_all_for_render(shopping_list)
@@ -241,6 +240,7 @@ def results() -> str:
         the_title=TITLE,
         shopping_list=ready_list,
         sum_of_expenses=sum_of_expenses,
+        userdate=userdate,
     )
 
 

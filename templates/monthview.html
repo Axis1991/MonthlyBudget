@@ -1,115 +1,137 @@
-{% extends 'base.html' %}
-{% block body %}
+<!doctype html>
+<html>
 
-<h1>{{ the_title }}</h1>
+<head>
+    <title>{{ the_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='hf.css') }}">
+</head>
 
-<!-- <p class="info">Choose a day you'd like to edit</p> -->
+<body>
+    {% block body %}
 
-<h2> {{ the_month }} {{the_year}}</h2>
+    <h1>{{ the_title }}</h1>
 
-<div class="form">
+    <!-- <p class="info">Choose a day you'd like to edit</p> -->
+
+    <h2> {{ the_month }} {{the_year}}</h2>
+
+    <div class="form">
+        <table>
+            <tr>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+                <th>Sun</th>
+            </tr>
+            {% for row in the_month_data %}
+            <tr>
+                {% for cell in row %}
+                {% if "!" in cell %}
+                {% set modified_cell = cell[:-1] %}
+                <td class="happy">
+                    <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
+                            class="shoppingcell happy-shoppingcell" type='SUBMIT'>
+                        <input type="hidden" name="month" value="{{ the_month }}">
+                        <input type="hidden" name="year" value="{{ the_year }}">
+                    </form>
+                </td>
+                {% elif "@" in cell %}
+                {% set modified_cell = cell[:-1] %}
+                <td class="sad">
+                    <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
+                            class="shoppingcell sad-shoppingcell" type='SUBMIT'>
+                        <input type="hidden" name="month" value="{{ the_month }}">
+                        <input type="hidden" name="year" value="{{ the_year }}">
+                    </form>
+                </td>
+                {% elif "&" in cell %}
+                {% set modified_cell = cell[:-1] %}
+                <td class="mixed">
+                    <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
+                            class="shoppingcell mixed-shoppingcell" type='SUBMIT'>
+                        <input type="hidden" name="month" value="{{ the_month }}">
+                        <input type="hidden" name="year" value="{{ the_year }}">
+                    </form>
+                </td>
+                {% else %}
+                <td>{{ cell }}</td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {%endfor%}
+        </table>
+        {% if the_weeks == 5 %}
+        <p style="font-size: 4.73em;"> </p>
+        {% endif %}
+        <div>
+            <div class="Please">
+                <form method='POST' , action='/previous_month'>
+                    <input value="Previous month" class="button-link" type='SUBMIT'>
+                    <input type="hidden" name="month" value="{{ the_month }}">
+                    <input type="hidden" name="year" value="{{ the_year }}">
+                </form>
+            </div>
+            <div class="Please">
+                <form method='POST' , action='/next_month'>
+                    <input value="Next month" class="button-link" type='SUBMIT'>
+                    <input type="hidden" name="month" value="{{ the_month }}">
+                    <input type="hidden" name="year" value="{{ the_year }}">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <h2>It looks like a{{ the_month_satisfaction }} month.<br></h2>
+
     <table>
         <tr>
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>
-            <th>Sun</th>
+            <th>Date of purchase</th>
+            <th>Value</th>
+            <th>Item</th>
+            <th>Worth it?</th>
+            <th> </th>
         </tr>
-        {% for row in the_month_data %}
+        {% for row in the_shopping_data %}
         <tr>
             {% for cell in row %}
-            {% if "!" in cell %}
-            {% set modified_cell = cell[:-1] %}
-            <td class="happy">
-                <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
-                        class="shoppingcell happy-shoppingcell" type='SUBMIT'>
-                </form>
-            </td>
-            {% elif "@" in cell %}
-            {% set modified_cell = cell[:-1] %}
-            <td class="sad">
-                <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
-                        class="shoppingcell sad-shoppingcell" type='SUBMIT'>
-                </form>
-            </td>
-            {% elif "&" in cell %}
-            {% set modified_cell = cell[:-1] %}
-            <td class="mixed">
-                <form method='POST' action='/daily'><input name='day' value="{{ modified_cell }}"
-                        class="shoppingcell mixed-shoppingcell" type='SUBMIT'>
+            {% if "&*@!" in cell%}
+            {% set new_cell = cell[4:] %}
+            {% set delete_button = "Delete" %}
+            <td>
+                <form method='POST' action='/delete_entry'><input value="{{ delete_button }}" class="button-link"
+                        type='SUBMIT'>
+                    <input type="hidden" name="id_to_delete" value="{{ new_cell }}">
                 </form>
             </td>
             {% else %}
-            <td>{{ cell }}</td>
+            <td>{{ cell|safe }}</td>
             {% endif %}
             {% endfor %}
         </tr>
-        {%endfor%}
-    </table>
-    {% if the_weeks == 5 %}
-    <p style="font-size: 4.73em;"> </p>
-    {% endif %}
-    <div>
-        <div class="Please">
-            <form method='POST' , action='/previous_month'>
-                <input value="Previous month" class="button-link" type='SUBMIT'>
-            </form>
-        </div>
-        <div class="Please">
-            <form method='POST' , action='/next_month'>
-                <input value="Next month" class="button-link" type='SUBMIT'>
-            </form>
-        </div>
-    </div>
-</div>
-
-<h2>It looks like a{{ the_month_satisfaction }} month.<br></h2>
-
-<table>
-    <tr>
-        <th>Date of purchase</th>
-        <th>Value</th>
-        <th>Item</th>
-        <th>Worth it?</th>
-        <th> </th>
-    </tr>
-    {% for row in the_shopping_data %}
-    <tr>
-        {% for cell in row %}
-        {% if "&*@!" in cell%}
-        {% set new_cell = cell[4:] %}
-        {% set delete_button = "Delete" %}
-        <td>
-            <form method='POST' action='/delete_entry'><input value="{{ delete_button }}" class="button-link" type='SUBMIT'>
-            <input type="hidden" name="id_to_delete" value="{{ new_cell }}">
-            </form>
-        </td>
-        {% else %}
-        <td>{{ cell|safe }}</td>
-        {% endif %}
         {% endfor %}
-    </tr>
-    {% endfor %}
-    <tr>
-        <td>All expenses</td>
-        <td>{{sum_of_expenses}}</td>
-        <td>
-            <a href="{{ url_for('add_entry') }}" class="button-link">Add entry</a>
-        </td>
-        <td colspan="2">
-            <form method='POST' action='/results'><input value="See everything" type='SUBMIT' class="button-link">
-            </form>
-        </td>
-    </tr>
-</table>
-<div class="Please">
-    <form method='POST' , action='/log_out'>
-        <input value="Log out" class="button-link" type='SUBMIT'>
-    </form>
-</div>
+        <tr>
+            <td>All expenses</td>
+            <td>{{sum_of_expenses}}</td>
+            <td>
+                <a href="{{ url_for('add_entry') }}" class="button-link">Add entry</a>
+            </td>
+            <td colspan="2">
+                <form method='POST' action='/results'><input value="See everything" type='SUBMIT' class="button-link">
+                </form>
+            </td>
+        </tr>
+    </table>
+    <div class="Please">
+        <form method='POST' , action='/log_out'>
+            <input value="Log out" class="button-link" type='SUBMIT'>
+        </form>
+    </div>
 
 
-{% endblock %}
+    {% endblock %}
+</body>
+
+</html>

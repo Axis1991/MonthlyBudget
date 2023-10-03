@@ -224,6 +224,9 @@ def read_all_shopping(current_userid):
     Shopping_class_data = pack_to_Shopping(shopping_data)
     return Shopping_class_data
 
+def read_date_from_url(date: str) -> tuple:
+    year, month = date.split("-")
+    return year, month
 
 def read_daily_shopping(month: int, year: int, day: int, userid: int) -> list:
     month = "0" + str(month) if month < 10 else month
@@ -294,5 +297,4 @@ def sum_up_expenses(data: Shopping) -> float:
 
 
 if __name__ == "__main__":
-    shopping = read_month_shopping(6, 2023, 1)
-    print(find_days_with_shopping(shopping))
+    read_date_from_url("2023-10")

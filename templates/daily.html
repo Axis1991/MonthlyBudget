@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
 
-<h2>{{ the_title }}</h2>
+<h2> {{ the_day }} {{ the_month_name }} {{ the_year }}</h2>
 
 <table>
     <tr>
@@ -32,7 +32,8 @@
         <td>All expenses</td>
         <td>{{sum_of_expenses}}</td>
         <td colspan="2">
-            <a href="{{ url_for('month_view') }}" class="button-link">Back to month view</a>
+            <form method='POST' action='/month_view/{{the_year}}-{{the_month}}'><input value="Back to month view" class="button-link" type='SUBMIT'>        
+            </form>
         </td>
     </tr>
 </table>
