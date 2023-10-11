@@ -140,7 +140,7 @@ def find_days_with_shopping(shopping_list: Shopping)-> dict|list:
             value = "&"
         else:
             value = "@"
-        satisfaction .append(value)
+        satisfaction.append(value)
         date = datetime.strptime(key, "%Y-%m-%d")
         day = date.day
         days_for_render[day] = value
