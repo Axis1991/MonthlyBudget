@@ -126,10 +126,6 @@ def test_add_shopping_items_incorrect_entry(monkeypatch):
     assert not mock_conn.commit.called
     assert not mock_cursor.close.called
 
-
-# jak można czy trzeba?
-
-
 def test_add_user(monkeypatch):
     cursor = Mock()
     con = Mock()
