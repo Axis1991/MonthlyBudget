@@ -109,26 +109,22 @@ def test_add_shopping_items_correct_entry(monkeypatch):
     mock_cursor.close.assert_called_once()
 
 
-# def test_add_shopping_items_incorrect_entry(monkeypatch):
-#     mock_cursor = Mock()
-#     mock_conn = Mock()
-#     mock_conn.cursor.return_value = mock_cursor
-#     monkeypatch.setattr("MonthlyBudget.sqlite3.connect", Mock(return_value=mock_conn))
+def test_add_shopping_items_incorrect_entry(monkeypatch):
+    mock_cursor = Mock()
+    mock_conn = Mock()
+    mock_conn.cursor.return_value = mock_cursor
+    monkeypatch.setattr("MonthlyBudget.sqlite3.connect", Mock(return_value=mock_conn))
 
-#     entry = Shopping(
-#         wrongItem=1, data="2023-10-12", value=10.0, item="Cappy", happy=True
-#     )
+    entry = Shopping(
+        wrongItem=1, data="2023-10-12", value=10.0, item="Cappy", happy=True
+    )
 
-#     with pytest.raises(TypeError):
-#         add_shopping_items(entry)
+    with pytest.raises(TypeError) as e_info:
+        add_shopping_items(entry)
 
-#     assert not mock_cursor.execute.called
-#     assert not mock_conn.commit.called
-#     assert not mock_cursor.close.called
-
-
-# # jak można czy trzeba?
-
+    assert not mock_cursor.execute.called
+    assert not mock_conn.commit.called
+    assert not mock_cursor.close.called
 
 def test_add_user(monkeypatch):
     cursor = Mock()
