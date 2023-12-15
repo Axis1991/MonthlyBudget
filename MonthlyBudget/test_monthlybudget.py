@@ -1,7 +1,4 @@
 import pytest
-import calendar
-from datetime import datetime
-import sqlite3
 from models import Shopping, Users
 from unittest.mock import Mock
 
@@ -12,22 +9,10 @@ from functs import (
     check_month_length,
     check_month_satisfaction,
     check_unique_username,
-    db_create,
-    delete_shopping_entry,
     find_days_with_shopping,
     get_month_info,
     get_month_name,
-    get_month_number,
-    get_user,
-    parse_date,
-    read_all_shopping,
-    read_daily_shopping,
-    read_date_from_url,
-    read_month_shopping,
-    repack_all_for_render,
-    repack_for_render,
-    sum_up_expenses,
-    MONTHS_AND_NUMBERS,
+    get_month_number
 )
 
 
@@ -256,4 +241,3 @@ def test_get_month_name(monthnumber, expected_output):
 def test_get_month_number(monthname, expected_output):
     assert get_month_number(monthname) == expected_output
 
-# Edit for code review
